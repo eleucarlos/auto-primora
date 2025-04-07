@@ -1,0 +1,2 @@
+# auto-primora
+Automações Inteligentes
