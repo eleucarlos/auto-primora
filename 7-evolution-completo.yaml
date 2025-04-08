@@ -10,7 +10,7 @@ services:
     - evolution_primora_instances:/evolution/instances
     - evolution_primora_store:/evolution/store
     environment:
-      - SERVER_URL=https://auto-primora.com.br
+      - SERVER_URL=${EVOLUTION_SERVER_URL}
       - DOCKER_ENV=true
       - LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS
       - DEL_INSTANCE=false
@@ -26,11 +26,11 @@ services:
       - CLEAN_STORE_CONTACTS=true
       - CLEAN_STORE_CHATS=true
       - AUTHENTICATION_TYPE=apikey
-      - AUTHENTICATION_API_KEY=0417bf43b0a8669bd6635bcb49d783df
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY}
       - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
       - QRCODE_LIMIT=30
       - WEBHOOK_GLOBAL_ENABLED=false
-      - WEBHOOK_GLOBAL_URL=https://auto-primora.com.br
+      - WEBHOOK_GLOBAL_URL=${EVOLUTION_WEBHOOK_URL}
       - WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS=false
       - WEBHOOK_EVENTS_APPLICATION_STARTUP=false
       - WEBHOOK_EVENTS_QRCODE_UPDATED=true
@@ -63,7 +63,7 @@ services:
           memory: 2048M
       labels:
         - traefik.enable=true
-        - traefik.http.routers.evolution_primora.rule=Host(`auto.primora.com.br`)
+        - traefik.http.routers.evolution_primora.rule=Host(`${EVOLUTION_DOMAIN}`)
         - traefik.http.routers.evolution_primora.entrypoints=websecure
         - traefik.http.routers.evolution_primora.tls.certresolver=letsencryptresolver
         - traefik.http.routers.evolution_primora.priority=1

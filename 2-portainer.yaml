@@ -25,17 +25,22 @@ services:
       mode: replicated
       replicas: 1
       placement:
-        constraints: [node.role == manager]
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=internal_net"
-        - "traefik.http.routers.portainer.rule=Host(`infra-auto.primora.com.br`)"
+        - "traefik.http.routers.portainer.rule=Host(`${PORTAINER_URL}`)"
         - "traefik.http.routers.portainer.entrypoints=websecure"
         - "traefik.http.routers.portainer.priority=1"
         - "traefik.http.routers.portainer.tls.certresolver=letsencryptresolver"
         - "traefik.http.routers.portainer.service=portainer"
         - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-
+  
 networks:
   internal_net:
     external: true
