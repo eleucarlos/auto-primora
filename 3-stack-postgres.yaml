@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:14
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - POSTGRES_PASSWD=${POSTGRES_PASSWORD}
     networks:
       - internal_net
     #ports:
