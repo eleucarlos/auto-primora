@@ -1,24 +1,28 @@
 version: "3.7"
 
 services:
-
   traefik:
-    image: traefik:2.11.2
+    image: traefik:latest
+    #container_name: traefik
     command:
       - "--api.dashboard=true"
-      - "--providers.docker.swarmMode=true"
-      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=internal_net"
+      # Provider swarm
+      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
+      - "--providers.swarm.watch=true"
+      - "--providers.swarm.exposedByDefault=false"
+      - "--providers.swarm.network=external_net"
+      # Entrypoints
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--entrypoints.websecure.address=:443"
+      # LetsEncrypt
       - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencryptresolver.acme.email=${TRAEFIK_ACME_EMAIL}"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=SEU_EMAIL"
       - "--certificatesresolvers.letsencryptresolver.acme.storage=/etc/traefik/letsencrypt/acme.json"
+      # Logs
       - "--log.level=DEBUG"
       - "--log.format=common"
       - "--log.filePath=/var/log/traefik/traefik.log"
@@ -36,9 +40,14 @@ services:
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-https@docker"
         - "traefik.http.routers.http-catchall.priority=1"
+        - "traefik.swarm.network=external_net"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
       - "vol_certificates:/etc/traefik/letsencrypt"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - target: 80
         published: 80
@@ -47,10 +56,9 @@ services:
         published: 443
         mode: host
     networks:
-      - internal_net
+      - external_net
 
 volumes:
-
   vol_shared:
     external: true
     name: volume_swarm_shared
@@ -59,7 +67,5 @@ volumes:
     name: volume_swarm_certificates
 
 networks:
-
-  internal_net:
+  external_net:
     external: true
-    name: internal_net
