@@ -3,18 +3,16 @@ version: "3.7"
 services:
   minio:
     image: quay.io/minio/minio
-    entrypoint: ["/usr/bin/docker-minio-entrypoint.sh"]
+    command: server /data --console-address ":9001"
     secrets:
       - minio_password_secret
-    #command: server /data --console-address ":9001"s
     networks:
       - external_net
     volumes:
       - minio_data:/data
-      - ./docker-minio-entrypoint.sh:/docker-minio-entrypoint.sh
     environment:
-      - MINIO_PASSWORD_FILE=/run/secrets/minio_password_secret
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_password_secret
       - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
       - MINIO_SERVER_URL=${MINIO_SERVER_URL}
     deploy:
