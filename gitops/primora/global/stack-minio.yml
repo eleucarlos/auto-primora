@@ -41,10 +41,9 @@ volumes:
     name: minio_data
 
 networks:
-  internal_net:
+  external_net:
     external: true
-    name: external_net
-
+    
 secrets:
   minio_password_secret:
     external: true
