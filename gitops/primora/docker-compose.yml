@@ -2,17 +2,13 @@ version: "3.7"
 
 services:
   postgres:
-    image: postgres:14
+    image: postgres:latest
+    secrets:
+      - postgres_password_secret
     environment:
-      - version: "3.7"
-
-services:
-  postgres:
-    image: postgres:14
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password_secret
     networks:
-      - internal_net
+      - external_net
     #ports:
     #  - 5432:5432
     volumes:
@@ -34,8 +30,9 @@ volumes:
     name: postgres_data
 
 networks:
-  internal_net:
+  external_net:
     external: true
-    name: internal_net
-    networks:
-      - internal_net
+
+secrets:
+  postgres_password_secret:
+    external: true
