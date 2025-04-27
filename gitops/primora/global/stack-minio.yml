@@ -15,6 +15,8 @@ services:
       - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_password_secret
       - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
       - MINIO_SERVER_URL=${MINIO_SERVER_URL}
+      - MINIO_API_DOMAIN=${MINIO_API_DOMAIN}
+      - MINIO_SERVER_DOMAIN=${MINIO_SERVER_DOMAIN}
     deploy:
       mode: replicated
       replicas: 1
@@ -23,13 +25,13 @@ services:
           - node.role == manager
       labels:
         - traefik.enable=true
-        - traefik.http.routers.minio_public.rule=Host(`${MINIO_PUBLIC_URL}`)
+        - traefik.http.routers.minio_public.rule=Host(`${MINIO_API_DOMAIN}`)
         - traefik.http.routers.minio_public.entrypoints=websecure
         - traefik.http.routers.minio_public.tls.certresolver=letsencryptresolver
         - traefik.http.services.minio_public.loadbalancer.server.port=9000
         - traefik.http.services.minio_public.loadbalancer.passHostHeader=true
         - traefik.http.routers.minio_public.service=minio_public
-        - traefik.http.routers.minio_console.rule=Host(`${MINIO_BROWSER_REDIRECT_URL}`)
+        - traefik.http.routers.minio_console.rule=Host(`${MINIO_SERVER_DOMAIN}`)
         - traefik.http.routers.minio_console.entrypoints=websecure
         - traefik.http.routers.minio_console.tls.certresolver=letsencryptresolver
         - traefik.http.services.minio_console.loadbalancer.server.port=9001
